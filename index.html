@@ -1,224 +1,436 @@
-
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Quality - Full Screen TV</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Power BI TV Dashboard</title>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background-color: #000;
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
+        /* =========================================
+           RESET
+        ========================================== */
+
+        *{
+
+            margin:0;
+            padding:0;
+
+            box-sizing:border-box;
+
         }
 
-        h2 { 
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            z-index: 100;
-            color: #f2f2f2;
-            letter-spacing: 2px;
-            font-weight: 300;
-            font-size: 1.2rem;
-            background: rgba(0,0,0,0.4);
-            padding: 5px 15px;
-            border-radius: 5px;
+        html,
+        body{
+
+            width:100%;
+            height:100%;
+
+            overflow:hidden;
+
+            background:black;
+
+            font-family:Arial, sans-serif;
+
         }
 
-        .dashboard-content {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
+        /* =========================================
+           CONTAINER
+        ========================================== */
+
+        .dashboard-container{
+
+            position:relative;
+
+            width:100vw;
+            height:100vh;
+
+            overflow:hidden;
+
         }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        /* =========================================
+           SLIDE PANEL
+        ========================================== */
+
+        .slide{
+
+            position:absolute;
+
+            width:100%;
+            height:100%;
+
+            top:0;
+            left:0;
+
+            opacity:0;
+
+            visibility:hidden;
+
+            transition:opacity .5s linear;
+
         }
 
-        .tab-panel {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 1.2s ease-in-out;
+        .slide.active{
+
+            opacity:1;
+
+            visibility:visible;
+
+            z-index:1;
+
         }
 
-        .tab-panel.active {
-            opacity: 1;
-            visibility: visible;
-            z-index: 1;
+        /* =========================================
+           IFRAME
+        ========================================== */
+
+        iframe{
+
+            width:100%;
+            height:100%;
+
+            border:none;
+
+            background:black;
+
         }
 
-        .progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background: lime;
-            width: 0%;
-            z-index: 200;
+        /* =========================================
+           VIDEO CONTAINER
+        ========================================== */
+
+        #videoContainer{
+
+            position:fixed;
+
+            top:0;
+            left:0;
+
+            width:100%;
+            height:100%;
+
+            background:black;
+
+            display:none;
+
+            justify-content:center;
+            align-items:center;
+
+            z-index:9999;
+
         }
+
+        /* =========================================
+           VIDEO
+        ========================================== */
+
+        #loopVideo{
+
+            width:100%;
+            height:100%;
+
+            object-fit:cover;
+
+        }
+
+        /* =========================================
+           PROGRESS BAR
+        ========================================== */
+
+        #progressBar{
+
+            position:fixed;
+
+            bottom:0;
+            left:0;
+
+            width:0%;
+
+            height:4px;
+
+            background:lime;
+
+            z-index:99999;
+
+        }
+
     </style>
+
 </head>
 
 <body>
 
-<h2>Dashboard Quality</h2>
+<div class="dashboard-container">
 
-<div class="dashboard-content">
+    <!-- =========================================
+         SLIDE 1
+    ========================================== -->
 
-    <!-- SLIDES -->
-    <div id="slide0" class="tab-panel active"><iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=d5a79356a4b7dddb3b12"></iframe></div>
-    <div id="slide1" class="tab-panel"><iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=c59f9a2c316249ebc41d"></iframe></div>
-    <div id="slide2" class="tab-panel"><iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=71056e5434aeae55990d"></iframe></div>
-    <div id="slide3" class="tab-panel"><iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=6af54b18951d5ce9bb6c"></iframe></div>
-    <div id="slide4" class="tab-panel"><iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=9b351f8381ea904cc214"></iframe></div>
-    <div id="slide5" class="tab-panel"><iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=e1744970a0e90b704012"></iframe></div>
-    <div id="slide6" class="tab-panel"><iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=23e00be0574058995014"></iframe></div>
+    <div class="slide active">
 
-    <div class="progress-bar" id="progressBar"></div>
+        <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=d5a79356a4b7dddb3b12&navContentPaneEnabled=false&filterPaneEnabled=false"></iframe>
+
+    </div>
+
+    <!-- =========================================
+         SLIDE 2
+    ========================================== -->
+
+    <div class="slide">
+
+        <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=c59f9a2c316249ebc41d&navContentPaneEnabled=false&filterPaneEnabled=false"></iframe>
+
+    </div>
+
+    <!-- =========================================
+         SLIDE 3
+    ========================================== -->
+
+    <div class="slide">
+
+        <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=71056e5434aeae55990d&navContentPaneEnabled=false&filterPaneEnabled=false"></iframe>
+
+    </div>
+
+    <!-- =========================================
+         SLIDE 4
+    ========================================== -->
+
+    <div class="slide">
+
+        <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=6af54b18951d5ce9bb6c&navContentPaneEnabled=false&filterPaneEnabled=false"></iframe>
+
+    </div>
+
+    <!-- =========================================
+         SLIDE 5
+    ========================================== -->
+
+    <div class="slide">
+
+        <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=9b351f8381ea904cc214&navContentPaneEnabled=false&filterPaneEnabled=false"></iframe>
+
+    </div>
+
+    <!-- =========================================
+         SLIDE 6
+    ========================================== -->
+
+    <div class="slide">
+
+        <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=e1744970a0e90b704012&navContentPaneEnabled=false&filterPaneEnabled=false"></iframe>
+
+    </div>
+
+    <!-- =========================================
+         SLIDE 7
+    ========================================== -->
+
+    <div class="slide">
+
+        <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=23e00be0574058995014&navContentPaneEnabled=false&filterPaneEnabled=false"></iframe>
+
+    </div>
+
+    <!-- =========================================
+         VIDEO FULLSCREEN
+    ========================================== -->
+
+    <div id="videoContainer">
+
+        <video
+            id="loopVideo"
+            autoplay
+            muted
+            playsinline>
+
+            <source src="video.mp4"
+                    type="video/mp4">
+
+        </video>
+
+    </div>
+
+    <!-- =========================================
+         PROGRESS BAR
+    ========================================== -->
+
+    <div id="progressBar"></div>
+
 </div>
 
 <script>
+
+    /* =========================================
+       ELEMENT
+    ========================================== */
+
+    const slides =
+        document.querySelectorAll(".slide");
+
+    const videoContainer =
+        document.getElementById("videoContainer");
+
+    const loopVideo =
+        document.getElementById("loopVideo");
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    /* =========================================
+       CONFIG
+    ========================================== */
+
+    // 45 DETIK PER SLIDE
+    const slideDuration = 45000;
+
+    // VIDEO MUNCUL SETELAH 29 MENIT
+    const videoInterval = 2 * 60 * 1000;
+
+    /* =========================================
+       VARIABLE
+    ========================================== */
+
     let currentSlide = 0;
-    const totalSlides = 7;
-    const intervalTime = 35000;
 
-    const panels = document.getElementsByClassName("tab-panel");
-    const progressBar = document.getElementById("progressBar");
+    let totalElapsed = 0;
 
-    let slideInterval;
-    let progressStartTime;
-    let remainingTime = intervalTime;
-    let isPaused = false;
-    let resumeTimeout;
+    /* =========================================
+       SHOW SLIDE
+    ========================================== */
 
-    function showSlide(index) {
-        for (let i = 0; i < panels.length; i++) {
-            panels[i].classList.remove("active");
+    function showSlide(index){
+
+        slides.forEach(slide => {
+
+            slide.classList.remove("active");
+
+        });
+
+        slides[index].classList.add("active");
+
+    }
+
+    /* =========================================
+       NEXT SLIDE
+    ========================================== */
+
+    function nextSlide(){
+
+        // JIKA VIDEO AKTIF
+        if(videoContainer.style.display === "flex"){
+
+            return;
+
         }
-        panels[index].classList.add("active");
-    }
 
-    function nextSlide() {
-        remainingTime = intervalTime;
-        currentSlide = (currentSlide + 1) % totalSlides;
+        currentSlide++;
+
+        if(currentSlide >= slides.length){
+
+            currentSlide = 0;
+
+        }
+
         showSlide(currentSlide);
+
+        totalElapsed += slideDuration;
+
         startProgressBar();
+
+        // TAMPILKAN VIDEO
+        if(totalElapsed >= videoInterval){
+
+            showVideo();
+
+        }
+
     }
 
-    function startProgressBar() {
+    /* =========================================
+       SHOW VIDEO
+    ========================================== */
+
+    function showVideo(){
+
+        videoContainer.style.display = "flex";
+
+        loopVideo.currentTime = 0;
+
+        loopVideo.play().catch(error => {
+
+            console.log(error);
+
+        });
+
+    }
+
+    /* =========================================
+       VIDEO END
+    ========================================== */
+
+    loopVideo.addEventListener("ended", () => {
+
+        videoContainer.style.display = "none";
+
+        totalElapsed = 0;
+
+    });
+
+    /* =========================================
+       PROGRESS BAR
+    ========================================== */
+
+    function startProgressBar(){
+
         progressBar.style.transition = "none";
+
         progressBar.style.width = "0%";
 
         setTimeout(() => {
-            progressBar.style.transition = `width ${remainingTime}ms linear`;
+
+            progressBar.style.transition =
+                `width ${slideDuration}ms linear`;
+
             progressBar.style.width = "100%";
+
         }, 50);
 
-        progressStartTime = Date.now();
-
-        clearInterval(slideInterval);
-        slideInterval = setInterval(nextSlide, remainingTime);
     }
 
-    function pauseSlider() {
-        if (isPaused) return;
-        isPaused = true;
-
-        clearInterval(slideInterval);
-
-        const elapsed = Date.now() - progressStartTime;
-        remainingTime = remainingTime - elapsed;
-
-        const computedWidth = window.getComputedStyle(progressBar).width;
-        progressBar.style.transition = "none";
-        progressBar.style.width = computedWidth;
-    }
-
-    function resumeSlider() {
-        if (!isPaused) return;
-        isPaused = false;
-        startProgressBar();
-    }
-
-    function resetResumeTimer() {
-        pauseSlider();
-
-        clearTimeout(resumeTimeout);
-        resumeTimeout = setTimeout(() => {
-            remainingTime = intervalTime;
-            resumeSlider();
-        }, 10000);
-    }
-
-    document.addEventListener("mousemove", resetResumeTimer);
-    document.addEventListener("click", resetResumeTimer);
-    document.addEventListener("keydown", resetResumeTimer);
+    /* =========================================
+       START
+    ========================================== */
 
     showSlide(currentSlide);
+
     startProgressBar();
 
-    // ===============================
-    // 🔥 LG HARDCORE KEEP ALIVE FINAL
-    // ===============================
+    /* =========================================
+       AUTO SLIDE
+    ========================================== */
 
-    // 1. Pixel change (REAL visual change)
     setInterval(() => {
-        document.body.style.filter = "brightness(100.1%)";
-        setTimeout(() => {
-            document.body.style.filter = "brightness(100%)";
-        }, 200);
-    }, 15000);
 
-    // 2. Force reflow
+        nextSlide();
+
+    }, slideDuration);
+
+    /* =========================================
+       AUTO REFRESH 30 MENIT
+    ========================================== */
+
     setInterval(() => {
-        document.body.style.display = "none";
-        document.body.offsetHeight;
-        document.body.style.display = "block";
-    }, 60000);
 
-    // 3. Refresh active iframe (REAL activity)
-    function refreshActiveIframe() {
-        const iframe = document.querySelector(".tab-panel.active iframe");
-        if (iframe) {
-            const src = iframe.src;
-            iframe.src = "";
-            setTimeout(() => { iframe.src = src; }, 300);
-        }
-    }
-    setInterval(refreshActiveIframe, 120000);
-
-    // 4. Scroll trick
-    setInterval(() => {
-        window.scrollTo(0, 1);
-        window.scrollTo(0, 0);
-    }, 20000);
-
-    // 5. Title change (DOM update)
-    setInterval(() => {
-        document.title = "Dashboard " + Date.now();
-    }, 20000);
-
-    // 6. Focus enforcement
-    setInterval(() => {
-        window.focus();
-    }, 20000);
-
-    // 7. Auto refresh full page (backup)
-    setInterval(() => {
         location.reload();
-    }, 600000);
+
+    }, 1800000);
 
 </script>
 
