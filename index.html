@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Power BI TV Dashboard</title>
+    <title>Power BI TV Monitoring</title>
 
     <style>
 
@@ -55,18 +55,18 @@
         }
 
         /* =========================================
-           SLIDE PANEL
+           SLIDE
         ========================================== */
 
         .slide{
 
             position:absolute;
 
-            width:100%;
-            height:100%;
-
             top:0;
             left:0;
+
+            width:100%;
+            height:100%;
 
             opacity:0;
 
@@ -136,27 +136,6 @@
             height:100%;
 
             object-fit:cover;
-
-        }
-
-        /* =========================================
-           PROGRESS BAR
-        ========================================== */
-
-        #progressBar{
-
-            position:fixed;
-
-            bottom:0;
-            left:0;
-
-            width:0%;
-
-            height:4px;
-
-            background:lime;
-
-            z-index:99999;
 
         }
 
@@ -238,29 +217,23 @@
 
     </div>
 
-    <!-- =========================================
-         VIDEO FULLSCREEN
-    ========================================== -->
+</div>
 
-    <div id="videoContainer">
+<!-- =========================================
+     VIDEO SCREEN
+========================================== -->
 
-        <video
-            id="loopVideo"
-            autoplay
-            playsinline>
+<div id="videoContainer">
 
-            <source src="video.mp4"
-                    type="video/mp4">
+    <video
+        id="loopVideo"
+        playsinline
+        controls>
 
-        </video>
+        <source src="video.mp4"
+                type="video/mp4">
 
-    </div>
-
-    <!-- =========================================
-         PROGRESS BAR
-    ========================================== -->
-
-    <div id="progressBar"></div>
+    </video>
 
 </div>
 
@@ -279,15 +252,12 @@
     const loopVideo =
         document.getElementById("loopVideo");
 
-    const progressBar =
-        document.getElementById("progressBar");
-
     /* =========================================
        CONFIG
     ========================================== */
 
-    // 45 DETIK PER SLIDE
-    const slideDuration = 120000;
+    // GANTI SLIDE SETIAP 2 MENIT
+    const slideDuration = 2 * 60 * 1000;
 
     // VIDEO MUNCUL SETELAH 29 MENIT
     const videoInterval = 29 * 60 * 1000;
@@ -322,28 +292,30 @@
 
     function nextSlide(){
 
-        // JIKA VIDEO AKTIF
+        // JIKA VIDEO SEDANG AKTIF
         if(videoContainer.style.display === "flex"){
 
             return;
 
         }
 
+        // NEXT INDEX
         currentSlide++;
 
+        // RESET KE AWAL
         if(currentSlide >= slides.length){
 
             currentSlide = 0;
 
         }
 
+        // TAMPILKAN SLIDE
         showSlide(currentSlide);
 
+        // HITUNG TOTAL WAKTU
         totalElapsed += slideDuration;
 
-        startProgressBar();
-
-        // TAMPILKAN VIDEO
+        // JIKA SUDAH 29 MENIT
         if(totalElapsed >= videoInterval){
 
             showVideo();
@@ -358,13 +330,19 @@
 
     function showVideo(){
 
+        // TAMPILKAN VIDEO
         videoContainer.style.display = "flex";
 
+        // VIDEO DARI AWAL
         loopVideo.currentTime = 0;
 
+        // AKTIFKAN SUARA
+        loopVideo.muted = false;
+
+        // PLAY VIDEO
         loopVideo.play().catch(error => {
 
-            console.log(error);
+            console.log("Autoplay blocked:", error);
 
         });
 
@@ -376,40 +354,19 @@
 
     loopVideo.addEventListener("ended", () => {
 
+        // HIDE VIDEO
         videoContainer.style.display = "none";
 
+        // RESET TIMER
         totalElapsed = 0;
 
     });
-
-    /* =========================================
-       PROGRESS BAR
-    ========================================== */
-
-    function startProgressBar(){
-
-        progressBar.style.transition = "none";
-
-        progressBar.style.width = "0%";
-
-        setTimeout(() => {
-
-            progressBar.style.transition =
-                `width ${slideDuration}ms linear`;
-
-            progressBar.style.width = "100%";
-
-        }, 50);
-
-    }
 
     /* =========================================
        START
     ========================================== */
 
     showSlide(currentSlide);
-
-    startProgressBar();
 
     /* =========================================
        AUTO SLIDE
@@ -422,7 +379,8 @@
     }, slideDuration);
 
     /* =========================================
-       AUTO REFRESH 30 MENIT
+       AUTO REFRESH
+       REFRESH SETIAP 30 MENIT
     ========================================== */
 
     setInterval(() => {
@@ -434,4 +392,5 @@
 </script>
 
 </body>
+
 </html>
